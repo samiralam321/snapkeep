@@ -76,24 +76,28 @@ export function dataUrlToBlob(dataUrl) {
 }
 
 /**
- * Crop an image data URL given bounding coordinates
+ * Crop an image data URL given bounding coordinates with subpixel precision
  * @param {string} dataUrl 
  * @param {{x: number, y: number, width: number, height: number}} cropRect 
  * @param {number} devicePixelRatio 
  * @param {string} format - 'image/png' | 'image/jpeg'
+ * @param {number} [viewportWidth]
+ * @param {number} [viewportHeight]
  * @returns {Promise<{ blob: Blob, dataUrl: string, width: number, height: number }>}
  */
-export function cropImage(dataUrl, cropRect, devicePixelRatio = 1, format = 'image/png') {
+export function cropImage(dataUrl, cropRect, devicePixelRatio = 1, format = 'image/png', viewportWidth = 0, viewportHeight = 0) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       try {
-        const dpr = devicePixelRatio || 1;
-        // Coordinates in CSS pixels multiplied by DPR
-        const sx = Math.max(0, Math.round(cropRect.x * dpr));
-        const sy = Math.max(0, Math.round(cropRect.y * dpr));
-        const sWidth = Math.min(img.width - sx, Math.round(cropRect.width * dpr));
-        const sHeight = Math.min(img.height - sy, Math.round(cropRect.height * dpr));
+        // Accurately compute scale factors based on actual captured image dimensions vs viewport
+        const scaleX = (viewportWidth && viewportWidth > 0) ? (img.width / viewportWidth) : (devicePixelRatio || 1);
+        const scaleY = (viewportHeight && viewportHeight > 0) ? (img.height / viewportHeight) : (devicePixelRatio || 1);
+
+        const sx = Math.max(0, Math.round(cropRect.x * scaleX));
+        const sy = Math.max(0, Math.round(cropRect.y * scaleY));
+        const sWidth = Math.min(img.width - sx, Math.round(cropRect.width * scaleX));
+        const sHeight = Math.min(img.height - sy, Math.round(cropRect.height * scaleY));
 
         if (sWidth <= 0 || sHeight <= 0) {
           return reject(new Error('Selected crop area is too small.'));
@@ -103,10 +107,13 @@ export function cropImage(dataUrl, cropRect, devicePixelRatio = 1, format = 'ima
         canvas.width = sWidth;
         canvas.height = sHeight;
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
 
-        const croppedDataUrl = canvas.toDataURL(format);
+        // Always export at maximum quality
+        const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const croppedDataUrl = canvas.toDataURL(mime, 1.0);
         canvas.toBlob((blob) => {
           if (!blob) {
             return reject(new Error('Failed to create cropped image blob.'));
@@ -117,7 +124,7 @@ export function cropImage(dataUrl, cropRect, devicePixelRatio = 1, format = 'ima
             width: sWidth,
             height: sHeight
           });
-        }, format);
+        }, mime, 1.0);
       } catch (err) {
         reject(err);
       }
@@ -128,13 +135,13 @@ export function cropImage(dataUrl, cropRect, devicePixelRatio = 1, format = 'ima
 }
 
 /**
- * Generate a compressed thumbnail data URL for fast library grid rendering
+ * Generate a high-resolution thumbnail data URL preserving crisp text and lines
  * @param {Blob|string} imageSource - Blob or data URL
  * @param {number} maxWidth 
  * @param {number} maxHeight 
  * @returns {Promise<string>}
  */
-export async function createThumbnail(imageSource, maxWidth = 360, maxHeight = 240) {
+export async function createThumbnail(imageSource, maxWidth = 800, maxHeight = 500) {
   let src = imageSource;
   if (imageSource instanceof Blob) {
     src = await blobToDataUrl(imageSource);
@@ -157,10 +164,11 @@ export async function createThumbnail(imageSource, maxWidth = 360, maxHeight = 2
       canvas.height = Math.max(1, height);
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'medium';
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      resolve(canvas.toDataURL('image/jpeg', 0.8));
+      // Lossless PNG thumbnail so text remains crisp and readable
+      resolve(canvas.toDataURL('image/png'));
     };
     img.onerror = () => resolve(typeof src === 'string' ? src : '');
     img.src = src;
@@ -184,6 +192,8 @@ export async function stitchVerticalImages(slices, totalWidth, totalHeight, form
   canvas.width = totalWidth;
   canvas.height = safeHeight;
   const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
   for (const slice of slices) {
     if (slice.y >= safeHeight) break;
@@ -198,8 +208,9 @@ export async function stitchVerticalImages(slices, totalWidth, totalHeight, form
     ctx.drawImage(img, 0, 0, totalWidth, drawHeight, 0, slice.y, totalWidth, drawHeight);
   }
 
+  const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
   return new Promise((resolve, reject) => {
-    const finalDataUrl = canvas.toDataURL(format);
+    const finalDataUrl = canvas.toDataURL(mime, 1.0);
     canvas.toBlob((blob) => {
       if (!blob) return reject(new Error('Failed to stitch full-page screenshot.'));
       resolve({
@@ -208,7 +219,7 @@ export async function stitchVerticalImages(slices, totalWidth, totalHeight, form
         width: totalWidth,
         height: safeHeight
       });
-    }, format);
+    }, mime, 1.0);
   });
 }
 

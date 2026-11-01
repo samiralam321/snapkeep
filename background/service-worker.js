@@ -127,10 +127,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const settings = await getSettings();
         const tab = sender.tab || (await getActiveTab());
 
-        // Capture visible tab immediately to crop
+        // Capture visible tab immediately with lossless, pixel-perfect PNG
         const fullDataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
-          format: settings.defaultFormat === 'jpeg' ? 'jpeg' : 'png',
-          quality: 95
+          format: 'png'
         });
 
         pendingCaptureData = {
@@ -138,9 +137,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           fullDataUrl,
           cropRect: request.rect,
           devicePixelRatio: request.devicePixelRatio || 1,
+          viewportWidth: request.viewportWidth || 0,
+          viewportHeight: request.viewportHeight || 0,
           sourceUrl: request.pageUrl || tab.url || '',
           sourceTitle: request.pageTitle || tab.title || 'Untitled Webpage',
-          format: settings.defaultFormat || 'png',
+          format: 'png',
           timestamp: Date.now()
         };
 

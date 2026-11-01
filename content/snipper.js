@@ -71,6 +71,8 @@
           height: Math.round(rect.height)
         },
         devicePixelRatio: window.devicePixelRatio || 1,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
         pageTitle: document.title || 'Untitled Webpage',
         pageUrl: window.location.href || ''
       }, () => {

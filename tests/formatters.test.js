@@ -5,7 +5,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { formatBytes, formatDate, formatRelativeTime, formatCountdown, getDomainFromUrl } from '../utils/formatters.js';
+import { formatBytes, formatDate, formatRelativeTime, formatCountdown, formatShortCountdown, getDomainFromUrl } from '../utils/formatters.js';
 import { generateId, generateScreenshotName } from '../utils/helpers.js';
 
 describe('Formatters Tests', () => {
@@ -58,6 +58,20 @@ describe('Formatters Tests', () => {
     assert.equal(result.isExpired, true);
     assert.equal(result.isUrgent, true);
     assert.match(result.text, /Expired/);
+  });
+
+  test('formatShortCountdown produces human friendly card labels', () => {
+    assert.equal(formatShortCountdown(null).text, 'Permanent');
+
+    const now = Date.now();
+    const future24h = now + (24 * 3600 * 1000);
+    assert.match(formatShortCountdown(future24h).text, /2[34]h left/);
+
+    const future10m = now + (10 * 60 * 1000);
+    assert.match(formatShortCountdown(future10m).text, /10m left/);
+
+    const past = now - 2000;
+    assert.equal(formatShortCountdown(past).isExpired, true);
   });
 
   test('getDomainFromUrl extracts clean hostname', () => {

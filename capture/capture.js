@@ -124,7 +124,9 @@ async function loadPendingCapture() {
         pending.fullDataUrl,
         pending.cropRect,
         pending.devicePixelRatio,
-        currentCapture.format === 'jpeg' ? 'image/jpeg' : 'image/png'
+        currentCapture.format === 'jpeg' ? 'image/jpeg' : 'image/png',
+        pending.viewportWidth || 0,
+        pending.viewportHeight || 0
       );
       currentCapture.blob = cropped.blob;
       currentCapture.dataUrl = cropped.dataUrl;
@@ -160,8 +162,8 @@ async function loadPendingCapture() {
       });
     }
 
-    // Generate lightweight thumbnail
-    currentCapture.thumbnailDataUrl = await createThumbnail(currentCapture.blob, 360, 220);
+    // Generate high-resolution thumbnail preserving sharp details
+    currentCapture.thumbnailDataUrl = await createThumbnail(currentCapture.blob, 800, 500);
 
     // Populate UI
     renderPreview();
@@ -213,7 +215,17 @@ function setupEventListeners() {
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': pngBlob })
       ]);
-      showToast('Screenshot copied to clipboard!', 'success');
+      
+      btnCopy.classList.add('copied');
+      const origHtml = btnCopy.innerHTML;
+      btnCopy.innerHTML = `
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span style="color: #059669; font-weight: 600;">Copied!</span>
+      `;
+      setTimeout(() => {
+        btnCopy.classList.remove('copied');
+        btnCopy.innerHTML = origHtml;
+      }, 1800);
     } catch (err) {
       console.error('Clipboard copy failed:', err);
       showToast('Could not copy to clipboard: ' + err.message, 'error');

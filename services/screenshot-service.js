@@ -55,7 +55,7 @@ export async function captureVisibleArea(format = 'png') {
 
   const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
     format: format === 'jpeg' ? 'jpeg' : 'png',
-    quality: 95
+    quality: 100
   });
 
   return {
@@ -146,8 +146,7 @@ export async function captureFullPage(format = 'png', onProgress = null) {
       await sleep(120);
 
       const chunkDataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
-        format: format === 'jpeg' ? 'jpeg' : 'png',
-        quality: 92
+        format: 'png'
       });
 
       const sliceHeightCss = Math.min(viewportHeight, targetHeight - currentY);

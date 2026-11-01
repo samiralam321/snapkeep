@@ -4,7 +4,7 @@
 
 import { initTheme } from '../utils/theme.js';
 import { STORAGE_TYPES } from '../utils/constants.js';
-import { formatBytes, formatDate, formatCountdown } from '../utils/formatters.js';
+import { formatBytes, formatDate, formatCountdown, formatShortCountdown, getDomainFromUrl } from '../utils/formatters.js';
 import { blobToDataUrl, dataUrlToBlob } from '../utils/helpers.js';
 import {
   getAllScreenshots,
@@ -25,6 +25,7 @@ let selectedIds = new Set();
 let displayedScreenshots = [];
 let activePreviewItem = null;
 let tickingTimer = null;
+let activeObjectUrls = [];
 
 // DOM Elements
 const tabButtons = document.querySelectorAll('.tab-btn');
@@ -226,7 +227,7 @@ function setupEventListeners() {
   });
 
   btnModalCopy.addEventListener('click', async () => {
-    if (activePreviewItem) await copyScreenshotToClipboard(activePreviewItem);
+    if (activePreviewItem) await copyScreenshotToClipboard(activePreviewItem, btnModalCopy);
   });
 
   btnModalDownload.addEventListener('click', () => {
@@ -311,9 +312,13 @@ async function refreshLibrary() {
 }
 
 /**
- * Render screenshot cards
+ * Render screenshot cards — CleanShot X / Linear Human-Crafted Design
  */
 function renderGrid() {
+  // Revoke previous object URLs to prevent memory leaks
+  activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  activeObjectUrls = [];
+
   grid.innerHTML = '';
 
   if (displayedScreenshots.length === 0) {
@@ -343,65 +348,94 @@ function renderGrid() {
     const isOneTime = item.storageType === STORAGE_TYPES.ONE_TIME;
     const isPerm = item.storageType === STORAGE_TYPES.PERMANENT;
 
-    let badgeClass = 'badge-permanent';
-    if (isTemp) badgeClass = 'badge-temporary';
-    if (isOneTime) badgeClass = 'badge-one-time';
+    let pillClass = 'pill-perm';
+    let dotClass = 'dot-perm';
+    if (isTemp) { pillClass = 'pill-temp'; dotClass = 'dot-temp'; }
+    if (isOneTime) { pillClass = 'pill-onetime'; dotClass = 'dot-onetime'; }
 
-    const countdown = formatCountdown(item.expiresAt, item.capturedAt);
-    const countdownClass = countdown.isUrgent ? 'countdown-urgent' : '';
+    const countdown = formatShortCountdown(item.expiresAt);
+    if (countdown.isUrgent) pillClass += ' pill-urgent';
 
-    const thumbSrc = item.thumbnailDataUrl || '../icons/icon48.png';
+    // ALWAYS use full-resolution Blob object URL if available for 100% crispness!
+    let imageSrc = '';
+    if (item.blob) {
+      imageSrc = URL.createObjectURL(item.blob);
+      activeObjectUrls.push(imageSrc);
+    } else if (item.thumbnailDataUrl) {
+      imageSrc = item.thumbnailDataUrl;
+    } else {
+      imageSrc = '../icons/icon48.png';
+    }
+
+    const domain = getDomainFromUrl(item.sourceUrl);
 
     card.innerHTML = `
-      <input type="checkbox" class="card-select-checkbox" ${selectedIds.has(item.id) ? 'checked' : ''} title="Select">
-      
-      <div class="card-media-box">
-        <img class="card-thumbnail" src="${thumbSrc}" alt="Screenshot preview" loading="lazy">
-        <div class="card-overlay-badge">
-          <span class="badge ${badgeClass}">${item.storageType}</span>
+      <label class="card-select-label" title="Select screenshot">
+        <input type="checkbox" class="card-select-checkbox" ${selectedIds.has(item.id) ? 'checked' : ''}>
+      </label>
+
+      <!-- Hero Preview Container -->
+      <div class="card-preview-viewport" title="Click to view full resolution">
+        <div class="card-image-stage">
+          <img class="card-image" src="${imageSrc}" alt="${escapeHtml(item.name)}" loading="lazy">
+        </div>
+        
+        <!-- Floating Glass Retention Pill -->
+        <div class="card-pill-wrap">
+          <div class="retention-pill ${pillClass}">
+            <span class="status-dot ${dotClass}"></span>
+            <span class="countdown-label">${countdown.text}</span>
+          </div>
+        </div>
+
+        <!-- Hover Quick Look Overlay -->
+        <div class="quick-view-overlay">
+          <span class="quick-view-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+            Quick View
+          </span>
         </div>
       </div>
 
-      <div class="card-body">
-        <div class="card-title-row">
-          <span class="card-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
-          <button class="btn-card-rename" title="Rename">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+      <!-- Card Body & Metadata -->
+      <div class="card-content-area">
+        <div class="card-header-line">
+          <span class="card-title-text" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+          <button class="btn-rename-trigger" title="Rename file">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
           </button>
         </div>
 
-        <div class="card-countdown-row">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          <span class="countdown-text ${countdownClass}">${countdown.text}</span>
-        </div>
-
-        <div class="card-meta-row">
-          <span>${formatBytes(item.fileSize)}</span>
-          <span>&bull;</span>
+        <div class="card-meta-line">
+          <span class="meta-domain" title="${escapeHtml(item.sourceUrl || item.sourceTitle)}">${escapeHtml(domain)}</span>
+          <span class="meta-separator">&bull;</span>
+          <span class="meta-size">${formatBytes(item.fileSize)}</span>
+          <span class="meta-separator">&bull;</span>
+          <span class="meta-dims">${item.width || 0}×${item.height || 0}</span>
+          <span class="meta-separator">&bull;</span>
           <span>${formatDate(item.capturedAt)}</span>
         </div>
       </div>
 
-      <div class="card-actions-row">
-        <div class="card-actions-left">
-          <button class="btn-icon-card btn-action-copy" title="Copy to clipboard">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <!-- Action Bar -->
+      <div class="card-action-bar">
+        <button class="btn-copy-hero" title="Copy screenshot to clipboard">
+          <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span class="copy-label">Copy</span>
+        </button>
+        
+        <div class="action-btn-group">
+          <button class="action-icon-btn btn-tier-toggle" title="${isPerm ? 'Move to Temporary (24h auto-delete)' : 'Pin permanently (Keep forever)'}">
+            ${isPerm
+              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'
+            }
           </button>
-          <button class="btn-icon-card btn-action-download" title="Export to downloads">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <button class="action-icon-btn btn-download-file" title="Export file to laptop">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           </button>
-          <button class="btn-icon-card btn-action-toggle-tier" title="${isPerm ? 'Move to Temporary' : 'Move to Permanent'}">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              ${isPerm 
-                ? '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>' 
-                : '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>'
-              }
-            </svg>
-          </button>
-        </div>
-        <div class="card-actions-right">
-          <button class="btn-icon-card btn-icon-card-danger btn-action-delete" title="Delete">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <button class="action-icon-btn action-icon-btn-danger btn-delete-single" title="Delete screenshot">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </button>
         </div>
       </div>
@@ -417,28 +451,28 @@ function renderGrid() {
       card.classList.toggle('selected', checkbox.checked);
     });
 
-    const mediaBox = card.querySelector('.card-media-box');
-    mediaBox.addEventListener('click', () => openPreviewModal(item));
+    const viewport = card.querySelector('.card-preview-viewport');
+    viewport.addEventListener('click', () => openPreviewModal(item));
 
-    const btnRename = card.querySelector('.btn-card-rename');
+    const btnRename = card.querySelector('.btn-rename-trigger');
     btnRename.addEventListener('click', (e) => {
       e.stopPropagation();
       openRenameDialog(item);
     });
 
-    const btnCopy = card.querySelector('.btn-action-copy');
-    btnCopy.addEventListener('click', (e) => {
+    const btnCopy = card.querySelector('.btn-copy-hero');
+    btnCopy.addEventListener('click', async (e) => {
       e.stopPropagation();
-      copyScreenshotToClipboard(item);
+      await copyScreenshotToClipboard(item, btnCopy);
     });
 
-    const btnDownload = card.querySelector('.btn-action-download');
+    const btnDownload = card.querySelector('.btn-download-file');
     btnDownload.addEventListener('click', (e) => {
       e.stopPropagation();
       exportScreenshotFile(item);
     });
 
-    const btnToggleTier = card.querySelector('.btn-action-toggle-tier');
+    const btnToggleTier = card.querySelector('.btn-tier-toggle');
     btnToggleTier.addEventListener('click', async (e) => {
       e.stopPropagation();
       if (item.storageType === STORAGE_TYPES.PERMANENT) {
@@ -447,12 +481,12 @@ function renderGrid() {
         showToast('Moved to Temporary storage (24h).', 'info');
       } else {
         await updateScreenshot(item.id, { storageType: STORAGE_TYPES.PERMANENT, expiresAt: null });
-        showToast('Moved to Permanent storage.', 'success');
+        showToast('Pinned to Permanent storage.', 'success');
       }
       await refreshLibrary();
     });
 
-    const btnDelete = card.querySelector('.btn-action-delete');
+    const btnDelete = card.querySelector('.btn-delete-single');
     btnDelete.addEventListener('click', (e) => {
       e.stopPropagation();
       promptDeleteSingle(item);
@@ -492,17 +526,18 @@ function updateCountdownsOnCards() {
   const cards = grid.querySelectorAll('.screenshot-card');
   cards.forEach((card) => {
     const expiresAtStr = card.dataset.expiresAt;
-    const capturedAtStr = card.dataset.capturedAt;
     if (!expiresAtStr) return;
 
     const expiresAt = parseInt(expiresAtStr, 10);
-    const capturedAt = capturedAtStr ? parseInt(capturedAtStr, 10) : null;
-    const countdown = formatCountdown(expiresAt, capturedAt);
+    const countdown = formatShortCountdown(expiresAt);
 
-    const textEl = card.querySelector('.countdown-text');
-    if (textEl) {
-      textEl.textContent = countdown.text;
-      textEl.classList.toggle('countdown-urgent', countdown.isUrgent);
+    const labelEl = card.querySelector('.countdown-label');
+    const pillEl = card.querySelector('.retention-pill');
+    if (labelEl) {
+      labelEl.textContent = countdown.text;
+    }
+    if (pillEl) {
+      pillEl.classList.toggle('pill-urgent', countdown.isUrgent);
     }
   });
 
@@ -537,11 +572,11 @@ async function openPreviewModal(item) {
     modalMetaCountdown.innerHTML = `<span class="badge badge-permanent">Permanent</span>`;
   }
 
-  // Load high-resolution image blob
+  // Load high-resolution image blob directly
   try {
     let src = '';
     if (item.blob) {
-      src = await blobToDataUrl(item.blob);
+      src = URL.createObjectURL(item.blob);
     } else if (item.thumbnailDataUrl) {
       src = item.thumbnailDataUrl;
     }
@@ -560,9 +595,11 @@ function closePreviewModal() {
 }
 
 /**
- * Copy screenshot to system clipboard
+ * Copy screenshot to system clipboard with tactile feedback
+ * @param {Object} item 
+ * @param {HTMLElement} [triggerBtn] 
  */
-async function copyScreenshotToClipboard(item) {
+async function copyScreenshotToClipboard(item, triggerBtn = null) {
   try {
     let pngBlob = item.blob;
     if (!pngBlob) {
@@ -578,7 +615,22 @@ async function copyScreenshotToClipboard(item) {
     await navigator.clipboard.write([
       new ClipboardItem({ 'image/png': pngBlob })
     ]);
-    showToast('Screenshot copied to clipboard!', 'success');
+
+    // Tactile button feedback (morph to "Copied!" for 1.8 seconds)
+    if (triggerBtn) {
+      triggerBtn.classList.add('copied');
+      const originalHtml = triggerBtn.innerHTML;
+      triggerBtn.innerHTML = `
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span>Copied!</span>
+      `;
+      setTimeout(() => {
+        triggerBtn.classList.remove('copied');
+        triggerBtn.innerHTML = originalHtml;
+      }, 1800);
+    } else {
+      showToast('Screenshot copied to clipboard!', 'success');
+    }
   } catch (err) {
     showToast('Failed to copy to clipboard: ' + err.message, 'error');
   }

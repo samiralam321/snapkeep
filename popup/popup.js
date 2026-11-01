@@ -128,7 +128,7 @@ async function loadRecentScreenshots() {
   try {
     const screenshots = await getAllScreenshots({
       sortBy: 'newest',
-      includeBlobs: false
+      includeBlobs: true
     });
 
     const recents = screenshots.slice(0, 3);
@@ -145,12 +145,19 @@ async function loadRecentScreenshots() {
       const card = document.createElement('div');
       card.className = 'recent-item-card';
 
-      const thumbSrc = item.thumbnailDataUrl || '../icons/icon48.png';
-      const badgeClass = item.storageType === 'permanent'
-        ? 'badge-permanent'
-        : item.storageType === 'one-time'
-          ? 'badge-one-time'
-          : 'badge-temporary';
+      let thumbSrc = '';
+      if (item.blob) {
+        thumbSrc = URL.createObjectURL(item.blob);
+      } else if (item.thumbnailDataUrl) {
+        thumbSrc = item.thumbnailDataUrl;
+      } else {
+        thumbSrc = '../icons/icon48.png';
+      }
+
+      const isPerm = item.storageType === 'permanent';
+      const isOneTime = item.storageType === 'one-time';
+      const dotColor = isPerm ? '#10B981' : isOneTime ? '#EF4444' : '#D97706';
+      const label = isPerm ? 'Permanent' : isOneTime ? '15m' : '24h';
 
       card.innerHTML = `
         <img class="recent-thumb" src="${thumbSrc}" alt="Thumbnail">
@@ -159,7 +166,10 @@ async function loadRecentScreenshots() {
           <div class="recent-meta">
             <span>${formatRelativeTime(item.capturedAt)}</span>
             <span>&bull;</span>
-            <span class="badge ${badgeClass}">${item.storageType}</span>
+            <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 500;">
+              <span style="width: 5px; height: 5px; border-radius: 50%; background: ${dotColor};"></span>
+              ${label}
+            </span>
           </div>
         </div>
       `;

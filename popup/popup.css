@@ -280,12 +280,15 @@ body {
 }
 
 .recent-thumb {
-  width: 44px;
-  height: 30px;
+  width: 48px;
+  height: 32px;
   border-radius: 4px;
   object-fit: cover;
-  background: #0F172A;
+  background: var(--sk-bg-subtle);
+  border: 1px solid var(--sk-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .recent-info {

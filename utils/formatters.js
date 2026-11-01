@@ -109,6 +109,37 @@ export function formatCountdown(expiresAt, capturedAt = null) {
 }
 
 /**
+ * Format concise human-friendly countdown for cards (e.g. "23h left", "14m left")
+ * @param {number|null} expiresAt 
+ * @returns {{ text: string, isExpired: boolean, isUrgent: boolean }}
+ */
+export function formatShortCountdown(expiresAt) {
+  if (!expiresAt) {
+    return { text: 'Permanent', isExpired: false, isUrgent: false };
+  }
+  const now = Date.now();
+  const diff = expiresAt - now;
+  if (diff <= 0) {
+    return { text: 'Expired', isExpired: true, isUrgent: true };
+  }
+  const totalSec = Math.floor(diff / 1000);
+  const hours = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+
+  let text = '';
+  if (hours > 0) text = `${hours}h left`;
+  else if (mins > 0) text = `${mins}m left`;
+  else text = `${secs}s left`;
+
+  return {
+    text,
+    isExpired: false,
+    isUrgent: diff < 5 * 60 * 1000
+  };
+}
+
+/**
  * Extract clean hostname/domain from URL
  * @param {string} url 
  * @returns {string}
