@@ -22,20 +22,43 @@ SnapKeep is built **100% local-first**. No analytics, no accounts, no servers, a
 
 ---
 
-## 2. Local Installation in Google Chrome
+## 2. Installation Guide (For Any Browser User)
 
-SnapKeep is fully functional and ready to be loaded as an unpacked extension:
+SnapKeep is a standalone, local-first Manifest V3 Chrome extension. Any user can install and run it in less than 60 seconds without needing to compile, build, or configure complex developer environments.
 
-1. Open **Google Chrome**.
-2. Navigate to `chrome://extensions/` in the address bar.
-3. Enable **Developer mode** using the toggle in the top-right corner.
-4. Click the **Load unpacked** button in the top-left toolbar.
-5. In the file picker, select the project directory:
-   ```text
-   C:\Users\samir\.gemini\antigravity\scratch\snapkeep
-   ```
-6. SnapKeep will immediately appear in your extension list!
-7. Click the **Extensions puzzle piece icon** in Chrome's toolbar and **pin** SnapKeep for quick access.
+### Step 1: Get the Code
+Choose either of these simple methods:
+
+* **Option A: Clone with Git (Recommended)**
+  ```bash
+  git clone https://github.com/samiralam321/snapkeep.git
+  ```
+* **Option B: Download ZIP directly from GitHub**
+  1. Click the green **`<> Code`** button at the top of this repository page.
+  2. Click **Download ZIP**.
+  3. Extract the downloaded `snapkeep-main.zip` folder on your computer.
+
+---
+
+### Step 2: Load the Extension in Google Chrome (or Edge / Brave)
+
+1. Open **Google Chrome** (also fully compatible with Microsoft Edge, Brave, Opera, or any Chromium browser).
+2. Open the Extensions management page:
+   * **Chrome**: Type `chrome://extensions/` in your address bar and press Enter.
+   * **Edge**: Type `edge://extensions/` in your address bar and press Enter.
+   * **Brave**: Type `brave://extensions/` in your address bar and press Enter.
+3. In the top-right corner, switch the **Developer mode** toggle to **ON**.
+4. In the top-left toolbar, click the **Load unpacked** button.
+5. In the file picker, navigate to and select the `snapkeep` directory you cloned or unzipped.
+6. 🎉 **SnapKeep will immediately appear in your extensions list!**
+
+---
+
+### Step 3: Pin for One-Click Access
+
+1. Click the **Extensions puzzle piece icon** in Chrome's top-right toolbar.
+2. Find **SnapKeep** in the list and click the **Pin** icon next to it.
+3. The SnapKeep icon will now stay pinned to your browser toolbar for instant access.
 
 ---
 

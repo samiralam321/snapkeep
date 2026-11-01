@@ -2,7 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
-const baseDir = 'C:/Users/samir/.gemini/antigravity/scratch/snapkeep';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const baseDir = path.resolve(__dirname, '..');
 
 function checkDirectory(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
