@@ -1,0 +1,112 @@
+/* SnapKeep Snipper Selection Overlay */
+#snapkeep-snipper-root {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 2147483647 !important;
+  cursor: crosshair !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  pointer-events: auto !important;
+  background: rgba(15, 23, 42, 0.45) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  box-sizing: border-box !important;
+}
+
+#snapkeep-snipper-selection {
+  position: absolute !important;
+  border: 2px solid #6366F1 !important;
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.5) !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+  border-radius: 2px !important;
+}
+
+#snapkeep-snipper-badge {
+  position: absolute !important;
+  top: -30px !important;
+  left: 0 !important;
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 3px 8px !important;
+  border-radius: 4px !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+  white-space: nowrap !important;
+}
+
+#snapkeep-snipper-toolbar {
+  position: absolute !important;
+  bottom: -46px !important;
+  right: 0 !important;
+  display: flex !important;
+  gap: 8px !important;
+  background: #1E293B !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  pointer-events: auto !important;
+  align-items: center !important;
+}
+
+.snapkeep-btn-snip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 4px 10px !important;
+  border-radius: 5px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  border: none !important;
+  outline: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.snapkeep-btn-confirm {
+  background: #6366F1 !important;
+  color: #FFFFFF !important;
+}
+.snapkeep-btn-confirm:hover {
+  background: #4F46E5 !important;
+}
+
+.snapkeep-btn-cancel {
+  background: #334155 !important;
+  color: #E2E8F0 !important;
+}
+.snapkeep-btn-cancel:hover {
+  background: #475569 !important;
+}
+
+#snapkeep-snipper-help {
+  position: fixed !important;
+  top: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  color: #F8FAFC !important;
+  padding: 8px 18px !important;
+  border-radius: 30px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  pointer-events: none !important;
+}
+
+#snapkeep-snipper-help kbd {
+  background: #334155 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-family: inherit !important;
+}

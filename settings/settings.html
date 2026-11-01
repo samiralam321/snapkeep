@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapKeep — Settings</title>
+  <link rel="stylesheet" href="../utils/shared.css">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-app">
+    <!-- Navbar -->
+    <header class="settings-navbar">
+      <div class="nav-left">
+        <div class="brand">
+          <img src="../icons/icon32.png" alt="SnapKeep Logo" class="brand-logo">
+          <span class="brand-name">SnapKeep</span>
+          <span class="brand-badge">Settings</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button id="btn-nav-library" class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Open Library
+        </button>
+        <button id="btn-nav-dashboard" class="btn btn-ghost btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          Dashboard
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Settings Form -->
+    <main class="settings-main">
+      <div class="settings-container">
+        
+        <!-- General Preferences -->
+        <section class="card settings-section">
+          <h2 class="section-heading">General Capture &amp; Storage Defaults</h2>
+          <p class="section-subtext">Configure default behaviors applied when capturing new screenshots.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="select-default-tier" class="setting-label">Default Retention Tier</label>
+              <select id="select-default-tier" class="form-select">
+                <option value="temporary">Temporary (24 Hours) — Auto-delete</option>
+                <option value="one-time">One-Time Use (15 Min fallback)</option>
+                <option value="permanent">Permanent — Keep Forever</option>
+              </select>
+              <span class="form-hint">Initial option pre-selected in post-capture decision dialog.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="select-temp-duration" class="setting-label">Temporary Retention Lifespan</label>
+              <select id="select-temp-duration" class="form-select">
+                <option value="12">12 Hours</option>
+                <option value="24" selected>24 Hours (Recommended)</option>
+                <option value="48">48 Hours</option>
+                <option value="168">7 Days</option>
+              </select>
+              <span class="form-hint">Time before temporary screenshots are purged.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="select-onetime-duration" class="setting-label">One-Time Fallback Duration</label>
+              <select id="select-onetime-duration" class="form-select">
+                <option value="5">5 Minutes</option>
+                <option value="15" selected>15 Minutes (Recommended)</option>
+                <option value="30">30 Minutes</option>
+                <option value="60">1 Hour</option>
+              </select>
+              <span class="form-hint">Safety window before one-time captures auto-expire.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="select-image-format" class="setting-label">Image Format</label>
+              <select id="select-image-format" class="form-select">
+                <option value="png" selected>PNG (Lossless &amp; crisp)</option>
+                <option value="jpeg">JPEG (Compressed file size)</option>
+              </select>
+              <span class="form-hint">Compression format used when saving and exporting.</span>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="input-naming-pattern" class="setting-label">Automatic Filename Convention</label>
+              <input type="text" id="input-naming-pattern" class="form-input" value="Screenshot_{YYYY}-{MM}-{DD}_{HH}-{mm}-{ss}">
+              <span class="form-hint">Tokens supported: <code>{YYYY}</code>, <code>{MM}</code>, <code>{DD}</code>, <code>{HH}</code>, <code>{mm}</code>, <code>{ss}</code></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Automatic Cleanup -->
+        <section class="card settings-section">
+          <h2 class="section-heading">Automatic Cleanup Engine</h2>
+          <p class="section-subtext">Control background cleanup alarms and browser notifications.</p>
+
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <span class="toggle-title">Enable Automatic Expiration Sweep</span>
+                <span class="toggle-desc">Automatically check and prune expired screenshots via Chrome background alarms and browser restarts.</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-auto-cleanup" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <span class="toggle-title">Cleanup Desktop Notifications</span>
+                <span class="toggle-desc">Show a small system notification after an automatic cleanup event frees storage space.</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-notifications" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="cleanup-status-box">
+            <div class="cleanup-info-item">
+              <span class="cleanup-info-lbl">Last Cleanup Run:</span>
+              <span class="cleanup-info-val" id="lbl-last-cleanup">—</span>
+            </div>
+            <div class="cleanup-info-item">
+              <span class="cleanup-info-lbl">Scheduled Frequency:</span>
+              <span class="cleanup-info-val">Every 5 minutes &amp; on startup</span>
+            </div>
+            <button id="btn-clean-now-settings" class="btn btn-secondary btn-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              Clean Expired Screenshots Now
+            </button>
+          </div>
+        </section>
+
+        <!-- Appearance -->
+        <section class="card settings-section">
+          <h2 class="section-heading">Appearance</h2>
+          <p class="section-subtext">Select your preferred color theme across all extension interfaces.</p>
+
+          <div class="theme-picker">
+            <label class="theme-option" id="theme-opt-system">
+              <input type="radio" name="theme-pref" value="system" checked>
+              <div class="theme-preview-box preview-system">
+                <div class="mock-theme-header"></div>
+                <div class="mock-theme-body"></div>
+              </div>
+              <span class="theme-label">System Default</span>
+            </label>
+
+            <label class="theme-option" id="theme-opt-light">
+              <input type="radio" name="theme-pref" value="light">
+              <div class="theme-preview-box preview-light">
+                <div class="mock-theme-header"></div>
+                <div class="mock-theme-body"></div>
+              </div>
+              <span class="theme-label">Light Theme</span>
+            </label>
+
+            <label class="theme-option" id="theme-opt-dark">
+              <input type="radio" name="theme-pref" value="dark">
+              <div class="theme-preview-box preview-dark">
+                <div class="mock-theme-header"></div>
+                <div class="mock-theme-body"></div>
+              </div>
+              <span class="theme-label">Dark Theme</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Keyboard Shortcuts -->
+        <section class="card settings-section">
+          <div class="section-split-header">
+            <div>
+              <h2 class="section-heading">Keyboard Shortcuts</h2>
+              <p class="section-subtext">Capture screenshots instantly without opening the extension popup.</p>
+            </div>
+            <button id="btn-configure-shortcuts" class="btn btn-secondary btn-sm">Configure in Chrome &rarr;</button>
+          </div>
+
+          <div class="shortcuts-list">
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Capture Visible Area</span>
+              <kbd class="shortcut-pill">Alt+Shift+V</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Select Area (Crop Snipper)</span>
+              <kbd class="shortcut-pill">Alt+Shift+S</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Capture Full Webpage</span>
+              <kbd class="shortcut-pill">Alt+Shift+F</kbd>
+            </div>
+          </div>
+        </section>
+
+        <!-- Danger Zone -->
+        <section class="card settings-section danger-section">
+          <h2 class="section-heading danger-heading">Storage Management &amp; Reset</h2>
+          <p class="section-subtext">Irreversible storage actions. Permanent screenshots will only be deleted with explicit user action.</p>
+
+          <div class="danger-actions-list">
+            <div class="danger-item">
+              <div>
+                <span class="danger-title">Purge All Temporary Screenshots</span>
+                <span class="danger-desc">Delete all temporary and one-time screenshots immediately, regardless of remaining time.</span>
+              </div>
+              <button id="btn-purge-temporary" class="btn btn-danger-subtle btn-sm">Purge Temporary</button>
+            </div>
+
+            <div class="danger-item">
+              <div>
+                <span class="danger-title">Erase Entire Library</span>
+                <span class="danger-desc">Permanently erase ALL screenshots including permanent items and reset the local database.</span>
+              </div>
+              <button id="btn-erase-all" class="btn btn-danger btn-sm">Erase All Data</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Save Button Footer -->
+        <div class="settings-footer">
+          <button id="btn-save-settings" class="btn btn-primary btn-lg">
+            Save Settings
+          </button>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-content" style="max-width: 440px; padding: 24px;">
+        <h3 id="confirm-title" style="font-size: 16px; margin-bottom: 8px;">Confirm Action</h3>
+        <p id="confirm-message" style="font-size: 13px; color: var(--sk-text-secondary); margin-bottom: 22px; line-height: 1.4;"></p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button id="btn-confirm-cancel" class="btn btn-secondary">Cancel</button>
+          <button id="btn-confirm-proceed" class="btn btn-danger">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

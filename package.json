@@ -1,0 +1,19 @@
+{
+  "name": "snapkeep",
+  "version": "1.0.0",
+  "description": "SnapKeep — Smart Screenshot Manager Chrome Extension",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "chrome-extension",
+    "screenshot",
+    "retention",
+    "cleanup",
+    "manifest-v3",
+    "indexeddb"
+  ],
+  "author": "SnapKeep Team",
+  "license": "MIT"
+}

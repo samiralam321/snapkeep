@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapKeep</title>
+  <link rel="stylesheet" href="../utils/shared.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-wrapper">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="header-brand">
+        <img src="../icons/icon32.png" alt="SnapKeep" class="brand-icon">
+        <div>
+          <span class="brand-title">SnapKeep</span>
+          <span class="brand-tagline">Smart Retention</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-quick-clean" class="btn-icon" title="Clean Expired Screenshots Now">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+        <button id="btn-open-settings" class="btn-icon" title="Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Capture Action Buttons -->
+    <section class="capture-actions-section">
+      <button id="btn-capture-visible" class="capture-action-card">
+        <div class="action-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </div>
+        <div class="action-text-box">
+          <span class="action-title">Capture Visible Area</span>
+          <span class="action-hint">Current screen view</span>
+        </div>
+        <kbd class="shortcut-key">Alt+Shift+V</kbd>
+      </button>
+
+      <button id="btn-capture-area" class="capture-action-card">
+        <div class="action-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v4m12-4v4M2 6h4m12 0h4M2 18h4m12 0h4M6 22v-4m12 4v-4"></path></svg>
+        </div>
+        <div class="action-text-box">
+          <span class="action-title">Select Area</span>
+          <span class="action-hint">Drag &amp; crop any region</span>
+        </div>
+        <kbd class="shortcut-key">Alt+Shift+S</kbd>
+      </button>
+
+      <button id="btn-capture-full" class="capture-action-card">
+        <div class="action-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        </div>
+        <div class="action-text-box">
+          <span class="action-title">Capture Full Page</span>
+          <span class="action-hint">Scrolls entire page</span>
+        </div>
+        <kbd class="shortcut-key">Alt+Shift+F</kbd>
+      </button>
+    </section>
+
+    <!-- Storage Mini Overview -->
+    <section class="storage-mini-overview">
+      <div class="overview-header">
+        <span class="section-title">Storage Overview</span>
+        <button id="btn-open-dashboard" class="link-btn">Details &rarr;</button>
+      </div>
+
+      <div class="storage-stats-row">
+        <div class="stat-pill">
+          <span class="stat-num" id="stat-total-count">0</span>
+          <span class="stat-lbl">Total Snaps</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num text-warning" id="stat-temp-count">0</span>
+          <span class="stat-lbl">Temporary</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num text-success" id="stat-perm-count">0</span>
+          <span class="stat-lbl">Permanent</span>
+        </div>
+      </div>
+
+      <!-- Storage Size Bar -->
+      <div class="storage-usage-container">
+        <div class="usage-labels">
+          <span id="stat-total-bytes">0 MB used</span>
+          <span id="stat-scheduled-deletion">0 scheduled for cleanup</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="progress-temp" class="progress-bar-fill fill-temp" style="width: 0%;"></div>
+          <div id="progress-perm" class="progress-bar-fill fill-perm" style="width: 0%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Screenshots -->
+    <section class="recent-section">
+      <div class="overview-header">
+        <span class="section-title">Recent Screenshots</span>
+        <button id="btn-view-all" class="link-btn">View All</button>
+      </div>
+      <div id="recent-list" class="recent-list">
+        <div class="empty-recent" id="empty-recent-state">
+          <p>No screenshots captured yet.</p>
+          <span>Use the buttons above to capture your first snap!</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popup Footer -->
+    <footer class="popup-footer">
+      <button id="btn-open-library" class="btn btn-primary btn-block">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Open Screenshot Library
+      </button>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

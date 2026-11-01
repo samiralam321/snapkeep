@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapKeep — Screenshot Library</title>
+  <link rel="stylesheet" href="../utils/shared.css">
+  <link rel="stylesheet" href="library.css">
+</head>
+<body>
+  <div class="library-app">
+    <!-- Top Navbar -->
+    <header class="library-navbar">
+      <div class="nav-left">
+        <div class="brand">
+          <img src="../icons/icon32.png" alt="SnapKeep Logo" class="brand-logo">
+          <span class="brand-name">SnapKeep</span>
+          <span class="brand-badge">Library</span>
+        </div>
+      </div>
+
+      <div class="nav-center">
+        <!-- Storage Category Tabs -->
+        <nav class="category-tabs" role="tablist">
+          <button class="tab-btn active" data-tab="all" role="tab" aria-selected="true">
+            All Snaps
+            <span class="tab-counter" id="tab-count-all">0</span>
+          </button>
+          <button class="tab-btn" data-tab="temporary" role="tab" aria-selected="false">
+            Temporary (24h)
+            <span class="tab-counter count-temp" id="tab-count-temporary">0</span>
+          </button>
+          <button class="tab-btn" data-tab="one-time" role="tab" aria-selected="false">
+            One-Time
+            <span class="tab-counter count-one-time" id="tab-count-one-time">0</span>
+          </button>
+          <button class="tab-btn" data-tab="permanent" role="tab" aria-selected="false">
+            Permanent
+            <span class="tab-counter count-perm" id="tab-count-permanent">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="nav-right">
+        <button id="btn-clean-expired" class="btn btn-secondary btn-sm" title="Clean all expired screenshots">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Clean Expired
+        </button>
+        <button id="btn-nav-dashboard" class="btn btn-ghost btn-sm" title="Storage Dashboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          Dashboard
+        </button>
+        <button id="btn-nav-settings" class="btn btn-ghost btn-sm" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="library-toolbar">
+      <!-- Search Input -->
+      <div class="search-box">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="input-search" class="search-input" placeholder="Search screenshots by name, website, title...">
+        <button id="btn-clear-search" class="clear-search-btn" style="display: none;">&times;</button>
+      </div>
+
+      <!-- Sort dropdown -->
+      <div class="toolbar-controls">
+        <label for="select-sort" class="control-label">Sort by:</label>
+        <select id="select-sort" class="form-select sort-select">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="size_desc">Largest Size</option>
+          <option value="size_asc">Smallest Size</option>
+          <option value="name">Name (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Batch Selection Bar (shown when 1+ selected) -->
+    <div id="batch-selection-bar" class="batch-bar" style="display: none;">
+      <div class="batch-info">
+        <input type="checkbox" id="checkbox-select-all" class="batch-checkbox">
+        <span id="batch-count-text">0 selected</span>
+      </div>
+      <div class="batch-actions">
+        <button id="btn-batch-move-perm" class="btn btn-secondary btn-sm">Move to Permanent</button>
+        <button id="btn-batch-move-temp" class="btn btn-secondary btn-sm">Move to Temporary (24h)</button>
+        <button id="btn-batch-delete" class="btn btn-danger-subtle btn-sm">Delete Selected</button>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="library-main">
+      <div id="screenshots-grid" class="screenshots-grid">
+        <!-- Screenshot cards rendered here dynamically -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-icon-wrap">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        </div>
+        <h3 id="empty-title">No screenshots found</h3>
+        <p id="empty-desc">Capture a screenshot using the extension icon or shortcuts (Alt+Shift+V).</p>
+      </div>
+    </main>
+
+    <!-- Preview / Lightbox Modal -->
+    <div id="preview-modal" class="modal-backdrop" style="display: none;">
+      <div class="preview-modal-dialog">
+        <header class="modal-header">
+          <div class="modal-title-wrap">
+            <span id="modal-screenshot-name" class="modal-title">Screenshot</span>
+            <span id="modal-storage-badge" class="badge"></span>
+          </div>
+          <div class="modal-header-actions">
+            <button id="btn-modal-rename" class="btn btn-ghost btn-sm" title="Rename screenshot">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              Rename
+            </button>
+            <button id="btn-modal-copy" class="btn btn-secondary btn-sm" title="Copy to clipboard">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy
+            </button>
+            <button id="btn-modal-download" class="btn btn-secondary btn-sm" title="Export to downloads folder">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export
+            </button>
+            <button id="btn-modal-delete" class="btn btn-danger-subtle btn-sm" title="Delete screenshot">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              Delete
+            </button>
+            <button id="btn-modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+          </div>
+        </header>
+
+        <div class="modal-body">
+          <div class="modal-image-container">
+            <img id="modal-full-image" src="" alt="Full resolution screenshot">
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <div class="modal-meta-left">
+            <span id="modal-meta-dimensions"></span>
+            <span>&bull;</span>
+            <span id="modal-meta-size"></span>
+            <span>&bull;</span>
+            <span id="modal-meta-date"></span>
+          </div>
+          <div class="modal-meta-right" id="modal-meta-countdown">
+            <!-- Live countdown badge -->
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Rename Dialog Modal -->
+    <div id="rename-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-content" style="max-width: 420px; padding: 20px;">
+        <h3 style="font-size: 15px; margin-bottom: 12px;">Rename Screenshot</h3>
+        <input type="text" id="input-rename-name" class="form-input" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button id="btn-cancel-rename" class="btn btn-secondary">Cancel</button>
+          <button id="btn-save-rename" class="btn btn-primary">Save Name</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Dialog Modal -->
+    <div id="confirm-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-content" style="max-width: 420px; padding: 22px;">
+        <h3 id="confirm-title" style="font-size: 15px; margin-bottom: 8px;">Are you sure?</h3>
+        <p id="confirm-message" style="font-size: 12.5px; color: var(--sk-text-secondary); margin-bottom: 20px; line-height: 1.4;"></p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button id="btn-confirm-cancel" class="btn btn-secondary">Cancel</button>
+          <button id="btn-confirm-proceed" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="library.js"></script>
+</body>
+</html>

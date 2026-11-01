@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapKeep — Screenshot Decision</title>
+  <link rel="stylesheet" href="../utils/shared.css">
+  <link rel="stylesheet" href="capture.css">
+</head>
+<body>
+  <div class="decision-container">
+    <!-- Header -->
+    <header class="decision-header">
+      <div class="header-brand">
+        <img src="../icons/icon32.png" alt="SnapKeep" class="brand-icon">
+        <div>
+          <h1 class="brand-title">SnapKeep</h1>
+          <p class="brand-subtitle">Smart Screenshot Manager</p>
+        </div>
+      </div>
+      <button id="btn-close-window" class="btn-icon-close" title="Close without saving">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </header>
+
+    <!-- Loading State while stitching/cropping -->
+    <div id="processing-view" class="processing-view">
+      <div class="spinner"></div>
+      <p id="processing-text">Processing captured screenshot...</p>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="decision-content" style="display: none;">
+      <!-- Status pill -->
+      <div class="capture-status-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span>Screenshot captured successfully</span>
+      </div>
+
+      <!-- Preview Box -->
+      <div class="preview-box">
+        <div class="preview-media-wrapper">
+          <img id="preview-image" alt="Captured screenshot preview" class="preview-image">
+        </div>
+        <div class="preview-meta-bar">
+          <span id="preview-dimensions" class="meta-tag">0 × 0 px</span>
+          <span id="preview-size" class="meta-tag">0 KB</span>
+          <span id="preview-source" class="meta-tag meta-source" title="">source</span>
+        </div>
+      </div>
+
+      <!-- Filename Section -->
+      <div class="filename-section">
+        <label for="input-filename" class="field-label">Screenshot Name</label>
+        <div class="filename-input-wrapper">
+          <input type="text" id="input-filename" class="form-input filename-input" spellcheck="false">
+          <span class="file-ext" id="filename-ext">.png</span>
+        </div>
+      </div>
+
+      <!-- Storage Decision Section -->
+      <div class="decision-section">
+        <h2 class="decision-question">How long do you want to keep this screenshot?</h2>
+        
+        <div class="storage-options-list" role="radiogroup">
+          <!-- Option 1: Temporary (24 Hours) -->
+          <label class="storage-option-card" for="opt-temporary" id="card-temporary">
+            <input type="radio" name="storageType" id="opt-temporary" value="temporary" checked>
+            <div class="option-icon icon-temporary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="option-details">
+              <div class="option-header-row">
+                <span class="option-title">Temporary — 24 Hours</span>
+                <span class="badge badge-temporary">Auto-deletes</span>
+              </div>
+              <p class="option-desc">Keep this screenshot temporarily. It will be automatically deleted after 24 hours.</p>
+            </div>
+          </label>
+
+          <!-- Option 2: One-Time Use -->
+          <label class="storage-option-card" for="opt-one-time" id="card-one-time">
+            <input type="radio" name="storageType" id="opt-one-time" value="one-time">
+            <div class="option-icon icon-one-time">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+            </div>
+            <div class="option-details">
+              <div class="option-header-row">
+                <span class="option-title">One-Time Use</span>
+                <span class="badge badge-one-time">15 min fallback</span>
+              </div>
+              <p class="option-desc">Use this screenshot right now. Delete it when done, with a 15-minute safety fallback.</p>
+            </div>
+          </label>
+
+          <!-- Option 3: Permanent -->
+          <label class="storage-option-card" for="opt-permanent" id="card-permanent">
+            <input type="radio" name="storageType" id="opt-permanent" value="permanent">
+            <div class="option-icon icon-permanent">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            </div>
+            <div class="option-details">
+              <div class="option-header-row">
+                <span class="option-title">Permanent — Keep Forever</span>
+                <span class="badge badge-permanent">Saved</span>
+              </div>
+              <p class="option-desc">Keep this screenshot until you decide to delete it. Never automatically removed.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="decision-actions">
+        <div class="quick-utilities">
+          <button id="btn-copy-clipboard" class="btn btn-secondary btn-sm" title="Copy screenshot to clipboard">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copy Image
+          </button>
+          <button id="btn-download-file" class="btn btn-secondary btn-sm" title="Save file to laptop disk">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export File
+          </button>
+        </div>
+        <div class="primary-actions">
+          <button id="btn-discard" class="btn btn-ghost">Discard</button>
+          <button id="btn-save" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Save Screenshot
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Success View -->
+    <div id="success-view" class="success-view" style="display: none;">
+      <div class="success-icon-wrap">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <h2 id="success-title">Screenshot Saved</h2>
+      <p id="success-message" class="success-message"></p>
+      <div class="success-actions">
+        <button id="btn-view-library" class="btn btn-secondary">Open Screenshot Library</button>
+        <button id="btn-done" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="capture.js"></script>
+</body>
+</html>

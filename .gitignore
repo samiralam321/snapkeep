@@ -1,0 +1,20 @@
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Node dependencies (not needed since extension runs vanilla JS & tests use node:test)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Local test outputs & logs
+*.log
+.system_generated/

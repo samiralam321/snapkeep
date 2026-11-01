@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapKeep — Storage Dashboard</title>
+  <link rel="stylesheet" href="../utils/shared.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard-app">
+    <!-- Navbar -->
+    <header class="dashboard-navbar">
+      <div class="nav-left">
+        <div class="brand">
+          <img src="../icons/icon32.png" alt="SnapKeep Logo" class="brand-logo">
+          <span class="brand-name">SnapKeep</span>
+          <span class="brand-badge">Storage Dashboard</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button id="btn-nav-library" class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Open Library
+        </button>
+        <button id="btn-nav-settings" class="btn btn-ghost btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="dashboard-main">
+      <div class="dashboard-container">
+        <!-- Hero Overview Card -->
+        <div class="card hero-metric-card">
+          <div class="hero-metric-header">
+            <div>
+              <span class="sub-label">SnapKeep Managed Storage</span>
+              <h2 class="metric-big" id="dash-total-bytes">0 MB</h2>
+              <p class="metric-caption" id="dash-total-caption">Across 0 total screenshots</p>
+            </div>
+            <div class="hero-actions">
+              <button id="btn-dash-clean-now" class="btn btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                Clean Expired Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Storage Breakdown Bar -->
+          <div class="storage-bar-section">
+            <div class="bar-legend">
+              <div class="legend-item"><span class="legend-dot dot-temp"></span> Temporary (<span id="pct-temp">0%</span>)</div>
+              <div class="legend-item"><span class="legend-dot dot-onetime"></span> One-Time (<span id="pct-onetime">0%</span>)</div>
+              <div class="legend-item"><span class="legend-dot dot-perm"></span> Permanent (<span id="pct-perm">0%</span>)</div>
+            </div>
+            <div class="dashboard-progress-track">
+              <div id="bar-fill-temp" class="bar-fill fill-temp" style="width: 0%;"></div>
+              <div id="bar-fill-onetime" class="bar-fill fill-onetime" style="width: 0%;"></div>
+              <div id="bar-fill-perm" class="bar-fill fill-perm" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Category Metric Cards -->
+        <div class="metrics-grid">
+          <!-- Temporary -->
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="category-icon-box box-temp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <span class="badge badge-temporary">24h Auto-Cleanup</span>
+            </div>
+            <span class="metric-label">Temporary Screenshots</span>
+            <div class="metric-val" id="dash-temp-count">0</div>
+            <div class="metric-detail" id="dash-temp-bytes">0 MB</div>
+            <p class="metric-foot">Automatically deleted when 24-hour retention period expires.</p>
+          </div>
+
+          <!-- One-Time -->
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="category-icon-box box-onetime">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+              </div>
+              <span class="badge badge-one-time">15m Fallback</span>
+            </div>
+            <span class="metric-label">One-Time Use</span>
+            <div class="metric-val" id="dash-onetime-count">0</div>
+            <div class="metric-detail" id="dash-onetime-bytes">0 MB</div>
+            <p class="metric-foot">Quick-use snaps deleted automatically after 15 minutes.</p>
+          </div>
+
+          <!-- Permanent -->
+          <div class="card metric-card">
+            <div class="metric-card-top">
+              <div class="category-icon-box box-perm">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              </div>
+              <span class="badge badge-permanent">Kept Forever</span>
+            </div>
+            <span class="metric-label">Permanent Screenshots</span>
+            <div class="metric-val" id="dash-perm-count">0</div>
+            <div class="metric-detail" id="dash-perm-bytes">0 MB</div>
+            <p class="metric-foot">Stored indefinitely. SnapKeep never automatically cleans these.</p>
+          </div>
+        </div>
+
+        <!-- Scheduled Deletion & Cleanup Engine Status -->
+        <div class="two-column-grid">
+          <!-- Scheduled Cleanup Box -->
+          <div class="card detail-card">
+            <div class="detail-card-header">
+              <h3 class="detail-title">Scheduled for Deletion</h3>
+              <span class="badge badge-one-time" id="badge-scheduled-count">0 items</span>
+            </div>
+            <p class="detail-desc">
+              Temporary and one-time screenshots currently queued for automatic removal once their countdowns hit zero.
+            </p>
+            <div class="scheduled-stats-box">
+              <div class="scheduled-item">
+                <span class="scheduled-num" id="dash-queued-count">0</span>
+                <span class="scheduled-sub">Queued Snaps</span>
+              </div>
+              <div class="scheduled-item">
+                <span class="scheduled-num text-danger" id="dash-expired-count">0</span>
+                <span class="scheduled-sub">Expired Now</span>
+              </div>
+              <div class="scheduled-item">
+                <span class="scheduled-num" id="dash-last-cleanup-time">—</span>
+                <span class="scheduled-sub">Last Cleanup Sweep</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Architecture Clarification -->
+          <div class="card detail-card">
+            <div class="detail-card-header">
+              <h3 class="detail-title">Storage Architecture</h3>
+              <span class="badge badge-permanent">Local-First</span>
+            </div>
+            <div class="architecture-notes">
+              <div class="arch-row">
+                <span class="arch-label">Internal Managed Storage:</span>
+                <span class="arch-value">IndexedDB (100% private, zero server sync)</span>
+              </div>
+              <div class="arch-row">
+                <span class="arch-label">Exported Files (Downloads):</span>
+                <span class="arch-value">Saved to <code>Downloads/SnapKeep/</code></span>
+              </div>
+              <div class="arch-note-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <p>
+                  SnapKeep's automatic cleanup deletes screenshots inside the extension's local database. Chrome extension security limits arbitrary laptop disk file deletion, so exported files remain safely in your Downloads folder unless you manually remove them.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Cleanup History -->
+        <div class="card detail-card history-card">
+          <div class="detail-card-header">
+            <h3 class="detail-title">Recent Cleanup Activity Log</h3>
+            <span class="badge badge-temporary">Audit Trail</span>
+          </div>
+          <div class="table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Screenshots Deleted</th>
+                  <th>Storage Freed</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <tr>
+                  <td colspan="4" class="text-center" style="padding: 24px;">No cleanup events recorded yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>
