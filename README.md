@@ -154,6 +154,23 @@ stateDiagram-v2
     Deleted --> [*]
 ```
 
+### Automatic Cleanup Engine Flow
+
+```mermaid
+flowchart TD
+    Trigger["Trigger: Periodic Alarm (5m) / Startup / SW Wakeup / Manual"] --> Query["Query IndexedDB for items with expiresAt <= Date.now()"]
+    Query --> Check{"Any expired items found?"}
+    Check -- "No" --> Done["End Cycle (Zero overhead)"]
+    Check -- "Yes" --> Filter["Safety Lock Guard: Strictly filter out storageType == 'permanent'"]
+    Filter --> Delete["Atomic DB Transaction: Delete Expired Blobs & Metadata"]
+    Delete --> Stats["Record Event to chrome.storage.local (Bytes freed, count, audit trail)"]
+    Stats --> Badge["Update Extension Action Badge Counter"]
+    Badge --> Notify{"Notifications Enabled & count > 0?"}
+    Notify -- "Yes" --> Alert["Display System Notification: 'X expired screenshots cleaned, Y MB freed'"]
+    Notify -- "No" --> End["Cleanup Sweep Complete"]
+    Alert --> End
+```
+
 ---
 
 ## 5. Storage Architecture & Safety Guarantees
