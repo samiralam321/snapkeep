@@ -61,13 +61,17 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 async function openDecisionWindow() {
   const url = chrome.runtime.getURL('capture/capture.html');
 
-  // Try creating a focused popup window
+  // Try creating a focused popup window centered over the browser
   try {
-    const currentWin = await chrome.windows.getCurrent();
-    const width = 450;
-    const height = 660;
-    const left = Math.max(0, Math.round((currentWin.left || 0) + ((currentWin.width || 1200) - width) / 2));
-    const top = Math.max(0, Math.round((currentWin.top || 0) + ((currentWin.height || 800) - height) / 2));
+    let win = null;
+    try {
+      win = await chrome.windows.getLastFocused();
+    } catch {}
+
+    const width = 460;
+    const height = 680;
+    const left = win && win.left !== undefined ? Math.max(0, Math.round(win.left + ((win.width || 1200) - width) / 2)) : 100;
+    const top = win && win.top !== undefined ? Math.max(0, Math.round(win.top + ((win.height || 800) - height) / 2)) : 100;
 
     await chrome.windows.create({
       url,
@@ -173,7 +177,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     (async () => {
       try {
         const settings = await getSettings();
-        const result = await captureVisibleArea(settings.defaultFormat || 'png');
+        const result = await captureVisibleArea(settings.defaultFormat || 'png', request.tabId);
         pendingCaptureData = {
           mode: 'visible',
           dataUrl: result.dataUrl,
@@ -185,6 +189,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         await openDecisionWindow();
         sendResponse({ success: true });
       } catch (err) {
+        console.error('[SnapKeep] TRIGGER_CAPTURE_VISIBLE error:', err);
         sendResponse({ success: false, error: err.message });
       }
     })();
@@ -195,9 +200,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'TRIGGER_START_SNIPPER') {
     (async () => {
       try {
-        await startAreaSelection();
+        await startAreaSelection(request.tabId);
         sendResponse({ success: true });
       } catch (err) {
+        console.error('[SnapKeep] TRIGGER_START_SNIPPER error:', err);
         sendResponse({ success: false, error: err.message });
       }
     })();
@@ -209,7 +215,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     (async () => {
       try {
         const settings = await getSettings();
-        const result = await captureFullPage(settings.defaultFormat || 'png');
+        const result = await captureFullPage(settings.defaultFormat || 'png', null, request.tabId);
         pendingCaptureData = {
           mode: 'full',
           ...result,
@@ -218,6 +224,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         await openDecisionWindow();
         sendResponse({ success: true });
       } catch (err) {
+        console.error('[SnapKeep] TRIGGER_CAPTURE_FULL error:', err);
         sendResponse({ success: false, error: err.message });
       }
     })();

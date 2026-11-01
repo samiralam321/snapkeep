@@ -30,24 +30,55 @@ export function isRestrictedUrl(url) {
 }
 
 /**
- * Get current active tab
+ * Get current active tab with robust fallbacks
+ * @param {number} [targetTabId] - Optional explicit tab ID
  * @returns {Promise<chrome.tabs.Tab>}
  */
-export async function getActiveTab() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab) {
-    throw new Error('No active browser tab found.');
+export async function getActiveTab(targetTabId = null) {
+  if (targetTabId) {
+    try {
+      const tab = await chrome.tabs.get(targetTabId);
+      if (tab) return tab;
+    } catch {
+      // Fall through to query
+    }
   }
-  return tab;
+
+  // 1. Try active tab in last focused window (the browser window the user was interacting with)
+  try {
+    const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tabs && tabs.length > 0 && tabs[0]) {
+      return tabs[0];
+    }
+  } catch {}
+
+  // 2. Try active tab in current window
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tabs && tabs.length > 0 && tabs[0]) {
+      return tabs[0];
+    }
+  } catch {}
+
+  // 3. Fallback to any active tab
+  try {
+    const tabs = await chrome.tabs.query({ active: true });
+    if (tabs && tabs.length > 0 && tabs[0]) {
+      return tabs[0];
+    }
+  } catch {}
+
+  throw new Error('No active browser tab found. Please make sure a webpage is open.');
 }
 
 /**
  * Capture visible tab directly
  * @param {string} format - 'png' | 'jpeg'
+ * @param {number} [targetTabId]
  * @returns {Promise<{ dataUrl: string, sourceUrl: string, sourceTitle: string, format: string }>}
  */
-export async function captureVisibleArea(format = 'png') {
-  const tab = await getActiveTab();
+export async function captureVisibleArea(format = 'png', targetTabId = null) {
+  const tab = await getActiveTab(targetTabId);
 
   if (isRestrictedUrl(tab.url)) {
     throw new Error('Chrome does not allow extensions to capture internal chrome:// or Web Store pages. Please switch to a regular website and try again.');
@@ -68,10 +99,11 @@ export async function captureVisibleArea(format = 'png') {
 
 /**
  * Inject snipper overlay into the active tab
+ * @param {number} [targetTabId]
  * @returns {Promise<boolean>}
  */
-export async function startAreaSelection() {
-  const tab = await getActiveTab();
+export async function startAreaSelection(targetTabId = null) {
+  const tab = await getActiveTab(targetTabId);
 
   if (isRestrictedUrl(tab.url)) {
     throw new Error('Area selection is not permitted on internal chrome:// or Web Store pages. Please switch to a standard webpage and try again.');
@@ -96,10 +128,11 @@ export async function startAreaSelection() {
  * Capture full webpage by scrolling through vertical slices
  * @param {string} format 
  * @param {(progress: number) => void} [onProgress]
+ * @param {number} [targetTabId]
  * @returns {Promise<{ slices: Array<{ dataUrl: string, y: number, height: number }>, totalWidth: number, totalHeight: number, sourceUrl: string, sourceTitle: string, format: string }>}
  */
-export async function captureFullPage(format = 'png', onProgress = null) {
-  const tab = await getActiveTab();
+export async function captureFullPage(format = 'png', onProgress = null, targetTabId = null) {
+  const tab = await getActiveTab(targetTabId);
 
   if (isRestrictedUrl(tab.url)) {
     throw new Error('Full-page capture is not available on internal chrome:// or Web Store pages.');
