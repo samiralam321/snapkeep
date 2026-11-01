@@ -327,10 +327,19 @@ function renderGrid() {
       emptyTitle.textContent = 'No matching screenshots';
       emptyDesc.textContent = `No results found for "${escapeHtml(currentSearch)}".`;
     } else {
-      emptyTitle.textContent = currentTab === 'all'
-        ? 'No screenshots yet'
-        : `No ${currentTab} screenshots`;
-      emptyDesc.textContent = 'Capture screenshots with SnapKeep to organize them automatically.';
+      if (currentTab === 'temporary') {
+        emptyTitle.textContent = 'No temporary screenshots';
+        emptyDesc.textContent = 'Screenshots saved as Temporary (24 Hours) automatically delete after 24 hours to keep your laptop storage clean.';
+      } else if (currentTab === 'one-time') {
+        emptyTitle.textContent = 'No one-time screenshots';
+        emptyDesc.textContent = 'One-time screenshots automatically expire after 15 minutes as a safety fallback.';
+      } else if (currentTab === 'permanent') {
+        emptyTitle.textContent = 'No permanent screenshots';
+        emptyDesc.textContent = 'Permanent screenshots are stored indefinitely and are never deleted automatically.';
+      } else {
+        emptyTitle.textContent = 'No screenshots yet';
+        emptyDesc.textContent = 'Capture screenshots with SnapKeep (Alt+Shift+V) to manage retention automatically.';
+      }
     }
     return;
   }
@@ -348,13 +357,12 @@ function renderGrid() {
     const isOneTime = item.storageType === STORAGE_TYPES.ONE_TIME;
     const isPerm = item.storageType === STORAGE_TYPES.PERMANENT;
 
-    let pillClass = 'pill-perm';
-    let dotClass = 'dot-perm';
-    if (isTemp) { pillClass = 'pill-temp'; dotClass = 'dot-temp'; }
-    if (isOneTime) { pillClass = 'pill-onetime'; dotClass = 'dot-onetime'; }
+    let tagClass = 'tag-perm';
+    if (isTemp) tagClass = 'tag-temp';
+    if (isOneTime) tagClass = 'tag-onetime';
 
     const countdown = formatShortCountdown(item.expiresAt);
-    if (countdown.isUrgent) pillClass += ' pill-urgent';
+    if (countdown.isUrgent) tagClass += ' tag-urgent';
 
     // ALWAYS use full-resolution Blob object URL if available for 100% crispness!
     let imageSrc = '';
@@ -374,32 +382,21 @@ function renderGrid() {
         <input type="checkbox" class="card-select-checkbox" ${selectedIds.has(item.id) ? 'checked' : ''}>
       </label>
 
-      <!-- Hero Preview Container -->
-      <div class="card-preview-viewport" title="Click to view full resolution">
-        <div class="card-image-stage">
-          <img class="card-image" src="${imageSrc}" alt="${escapeHtml(item.name)}" loading="lazy">
-        </div>
+      <!-- Thumbnail Container (Click to view full resolution Lightbox) -->
+      <div class="card-thumb-wrap" title="Click to view full resolution">
+        <img class="card-thumb-img" src="${imageSrc}" alt="${escapeHtml(item.name)}" loading="lazy">
         
-        <!-- Floating Glass Retention Pill -->
-        <div class="card-pill-wrap">
-          <div class="retention-pill ${pillClass}">
-            <span class="status-dot ${dotClass}"></span>
-            <span class="countdown-label">${countdown.text}</span>
-          </div>
-        </div>
-
-        <!-- Hover Quick Look Overlay -->
-        <div class="quick-view-overlay">
-          <span class="quick-view-pill">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
-            Quick View
+        <!-- Retention Tag -->
+        <div class="card-badge-wrap">
+          <span class="retention-tag ${tagClass}">
+            ${countdown.text}
           </span>
         </div>
       </div>
 
-      <!-- Card Body & Metadata -->
+      <!-- Card Content / Metadata -->
       <div class="card-content-area">
-        <div class="card-header-line">
+        <div class="card-title-row">
           <span class="card-title-text" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
           <button class="btn-rename-trigger" title="Rename file">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
@@ -419,23 +416,23 @@ function renderGrid() {
 
       <!-- Action Bar -->
       <div class="card-action-bar">
-        <button class="btn-copy-hero" title="Copy screenshot to clipboard">
-          <svg class="copy-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          <span class="copy-label">Copy</span>
+        <button class="btn-tier-toggle ${isPerm ? 'btn-tier-toggle-perm' : ''}" title="${isPerm ? 'Switch to Temporary (Auto-deletes in 24 hours)' : 'Keep Permanently (Never auto-deleted)'}">
+          ${isPerm
+            ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Set 24h'
+            : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Keep'
+          }
         </button>
         
         <div class="action-btn-group">
-          <button class="action-icon-btn btn-tier-toggle" title="${isPerm ? 'Move to Temporary (24h auto-delete)' : 'Pin permanently (Keep forever)'}">
-            ${isPerm
-              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
-              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'
-            }
+          <button class="action-icon-btn btn-copy" title="Copy screenshot to clipboard">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copy
           </button>
           <button class="action-icon-btn btn-download-file" title="Export file to laptop">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           </button>
           <button class="action-icon-btn action-icon-btn-danger btn-delete-single" title="Delete screenshot">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </button>
         </div>
       </div>
@@ -451,8 +448,8 @@ function renderGrid() {
       card.classList.toggle('selected', checkbox.checked);
     });
 
-    const viewport = card.querySelector('.card-preview-viewport');
-    viewport.addEventListener('click', () => openPreviewModal(item));
+    const thumb = card.querySelector('.card-thumb-wrap');
+    thumb.addEventListener('click', () => openPreviewModal(item));
 
     const btnRename = card.querySelector('.btn-rename-trigger');
     btnRename.addEventListener('click', (e) => {
@@ -460,7 +457,7 @@ function renderGrid() {
       openRenameDialog(item);
     });
 
-    const btnCopy = card.querySelector('.btn-copy-hero');
+    const btnCopy = card.querySelector('.btn-copy');
     btnCopy.addEventListener('click', async (e) => {
       e.stopPropagation();
       await copyScreenshotToClipboard(item, btnCopy);
@@ -478,10 +475,10 @@ function renderGrid() {
       if (item.storageType === STORAGE_TYPES.PERMANENT) {
         const expiresAt = Date.now() + (24 * 3600 * 1000);
         await updateScreenshot(item.id, { storageType: STORAGE_TYPES.TEMPORARY, expiresAt });
-        showToast('Moved to Temporary storage (24h).', 'info');
+        showToast('Moved to Temporary storage (auto-deletes in 24h).', 'info');
       } else {
         await updateScreenshot(item.id, { storageType: STORAGE_TYPES.PERMANENT, expiresAt: null });
-        showToast('Pinned to Permanent storage.', 'success');
+        showToast('Moved to Permanent storage (kept forever).', 'success');
       }
       await refreshLibrary();
     });
@@ -531,13 +528,10 @@ function updateCountdownsOnCards() {
     const expiresAt = parseInt(expiresAtStr, 10);
     const countdown = formatShortCountdown(expiresAt);
 
-    const labelEl = card.querySelector('.countdown-label');
-    const pillEl = card.querySelector('.retention-pill');
-    if (labelEl) {
-      labelEl.textContent = countdown.text;
-    }
-    if (pillEl) {
-      pillEl.classList.toggle('pill-urgent', countdown.isUrgent);
+    const tagEl = card.querySelector('.retention-tag');
+    if (tagEl) {
+      tagEl.textContent = countdown.text;
+      tagEl.classList.toggle('tag-urgent', countdown.isUrgent);
     }
   });
 
