@@ -217,13 +217,16 @@ function setupEventListeners() {
       ]);
       
       btnCopy.classList.add('copied');
+      btnCopy.setAttribute('data-tooltip', 'Copied!');
+      btnCopy.setAttribute('title', 'Copied!');
       const origHtml = btnCopy.innerHTML;
       btnCopy.innerHTML = `
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        <span style="color: #059669; font-weight: 600;">Copied!</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C875" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
       `;
       setTimeout(() => {
         btnCopy.classList.remove('copied');
+        btnCopy.setAttribute('data-tooltip', 'Copy Image');
+        btnCopy.setAttribute('title', 'Copy Image');
         btnCopy.innerHTML = origHtml;
       }, 1800);
     } catch (err) {
@@ -257,9 +260,14 @@ function setupEventListeners() {
 
   // Save screenshot with selected storage tier
   btnSave.addEventListener('click', async () => {
+    const origSaveHtml = btnSave.innerHTML;
     try {
       btnSave.disabled = true;
-      btnSave.textContent = 'Saving...';
+      btnSave.setAttribute('data-tooltip', 'Saving...');
+      btnSave.setAttribute('title', 'Saving...');
+      btnSave.innerHTML = `
+        <svg class="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg>
+      `;
 
       const storageType = getSelectedStorageType();
       const capturedAt = Date.now();
@@ -318,7 +326,9 @@ function setupEventListeners() {
       console.error('Failed saving screenshot:', err);
       showToast('Failed to save screenshot: ' + err.message, 'error');
       btnSave.disabled = false;
-      btnSave.textContent = 'Save Screenshot';
+      btnSave.setAttribute('data-tooltip', 'Save Screenshot');
+      btnSave.setAttribute('title', 'Save Screenshot');
+      btnSave.innerHTML = origSaveHtml;
     }
   });
 

@@ -313,24 +313,104 @@ body {
   line-height: 1.35;
 }
 
-/* Actions Footer */
+/* Actions Footer — Big Bold Icons */
 .decision-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid var(--sk-border);
-  gap: 10px;
+  gap: 12px;
 }
 
-.quick-utilities {
+.quick-utilities, .primary-actions {
   display: flex;
-  gap: 6px;
-}
-
-.primary-actions {
-  display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+/* Big Bold Icon Buttons (No Text) */
+.icon-action-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sk-bg-subtle);
+  border: 1px solid var(--sk-border);
+  color: var(--sk-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  outline: none;
+}
+
+.icon-action-btn:hover {
+  background-color: var(--sk-bg-hover);
+  border-color: var(--sk-text-muted);
+  transform: translateY(-1px);
+}
+
+.icon-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Floating Hover Tooltip */
+.icon-action-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #171822;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.icon-action-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Discard Button */
+.btn-discard-icon:hover {
+  background-color: var(--sk-danger-bg) !important;
+  border-color: var(--sk-danger-border) !important;
+  color: var(--sk-danger) !important;
+}
+
+/* Hero Save Button */
+.btn-save-hero {
+  background-color: #00C875 !important;
+  color: #061A0E !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(0, 200, 117, 0.3);
+}
+
+.btn-save-hero:hover {
+  background-color: #00E58F !important;
+  box-shadow: 0 6px 18px rgba(0, 200, 117, 0.45);
+  transform: translateY(-1px);
+}
+
+.icon-action-btn.copied {
+  background-color: var(--sk-success-bg) !important;
+  border-color: var(--sk-success) !important;
+  color: var(--sk-success) !important;
 }
 
 /* Success View */
