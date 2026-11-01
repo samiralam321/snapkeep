@@ -1,12 +1,12 @@
 /**
- * SnapKeep Design System — Human-Crafted, Focused, Minimalist
- * Built for clarity, speed, and tactile desktop responsiveness.
+ * SnapKeep Design System — Clean, Focused, High-Performance
+ * Built with precision, contrast, and tactile responsiveness.
  */
 
 :root {
-  --sk-primary: #2563EB;
-  --sk-primary-hover: #1D4ED8;
-  --sk-primary-light: #EFF6FF;
+  --sk-primary: #00B566;
+  --sk-primary-hover: #009E58;
+  --sk-primary-light: rgba(0, 181, 102, 0.12);
   
   --sk-bg: #F8F9FA;
   --sk-bg-subtle: #F1F3F5;
@@ -20,7 +20,7 @@
   --sk-border: #E5E7EB;
   --sk-border-subtle: #F3F4F6;
   
-  --sk-success: #059669;
+  --sk-success: #00B566;
   --sk-success-bg: #ECFDF5;
   --sk-success-border: #A7F3D0;
   
@@ -41,30 +41,30 @@
   --sk-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --sk-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
   
-  --sk-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sk-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Dark Theme — Neutral Charcoal/Zinc (Not Saturated Blue/AI Slop) */
+/* Dark Theme — Obsidian Matte Black with Neon Mint Accents */
 [data-theme="dark"] {
-  --sk-primary: #3B82F6;
-  --sk-primary-hover: #60A5FA;
-  --sk-primary-light: rgba(59, 130, 246, 0.12);
+  --sk-primary: #00C875;
+  --sk-primary-hover: #00E58F;
+  --sk-primary-light: rgba(0, 200, 117, 0.14);
 
-  --sk-bg: #111215;
-  --sk-bg-subtle: #17191D;
-  --sk-bg-card: #1D1F24;
-  --sk-bg-hover: #262930;
+  --sk-bg: #0E1015;
+  --sk-bg-subtle: #14161F;
+  --sk-bg-card: #181A23;
+  --sk-bg-hover: #222532;
   
-  --sk-text: #F3F4F6;
+  --sk-text: #FFFFFF;
   --sk-text-secondary: #9CA3AF;
   --sk-text-muted: #6B7280;
   
-  --sk-border: #2D313A;
-  --sk-border-subtle: #21242C;
+  --sk-border: rgba(255, 255, 255, 0.08);
+  --sk-border-subtle: rgba(255, 255, 255, 0.04);
   
-  --sk-success: #10B981;
-  --sk-success-bg: rgba(16, 185, 129, 0.12);
-  --sk-success-border: rgba(16, 185, 129, 0.25);
+  --sk-success: #00C875;
+  --sk-success-bg: rgba(0, 200, 117, 0.12);
+  --sk-success-border: rgba(0, 200, 117, 0.25);
 
   --sk-warning: #F59E0B;
   --sk-warning-bg: rgba(245, 158, 11, 0.12);
@@ -74,9 +74,9 @@
   --sk-danger-bg: rgba(239, 68, 68, 0.12);
   --sk-danger-border: rgba(239, 68, 68, 0.25);
   
-  --sk-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --sk-shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.5);
-  --sk-shadow-lg: 0 12px 24px -3px rgba(0, 0, 0, 0.6);
+  --sk-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --sk-shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.6);
+  --sk-shadow-lg: 0 12px 28px -3px rgba(0, 0, 0, 0.7);
 }
 
 /* Base resets */
@@ -123,10 +123,13 @@ body {
 
 .btn-primary {
   background-color: var(--sk-primary);
-  color: #FFFFFF;
+  color: #061A0E;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(0, 200, 117, 0.25);
 }
 .btn-primary:hover {
   background-color: var(--sk-primary-hover);
+  box-shadow: 0 4px 16px rgba(0, 200, 117, 0.35);
 }
 
 .btn-secondary {

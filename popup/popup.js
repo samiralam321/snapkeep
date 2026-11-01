@@ -156,7 +156,7 @@ async function loadRecentScreenshots() {
 
       const isPerm = item.storageType === 'permanent';
       const isOneTime = item.storageType === 'one-time';
-      const dotColor = isPerm ? '#10B981' : isOneTime ? '#EF4444' : '#D97706';
+      const dotColor = isPerm ? '#00C875' : isOneTime ? '#EF4444' : '#F59E0B';
       const label = isPerm ? 'Permanent' : isOneTime ? '15m' : '24h';
 
       card.innerHTML = `
